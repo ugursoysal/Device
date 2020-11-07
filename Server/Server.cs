@@ -222,7 +222,7 @@ namespace Server
             }
             finally
             {
-                serverControl.Change(300000, System.Threading.Timeout.Infinite);
+                ClientApi.TimerChange(serverControl, 30000);
             }
         }
     }

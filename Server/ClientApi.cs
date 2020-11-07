@@ -1,4 +1,5 @@
-﻿using Server.Game;
+﻿using InputManager;
+using Server.Game;
 using Server.GameApi;
 using Server.Image;
 using Server.Native;
@@ -122,13 +123,42 @@ namespace Server
                         {
                             var bmp = PixelCache.GetScreenshot();
                             bmp.Bitmap.Save("gs1.bmp");
+                            if (bmp.GetPixel(485, 352) == Color.FromArgb(59, 45, 24)) // afk
+                            {
+                                Mouse.Move(485, 352);
+                                Thread.Sleep(600);
+                                Mouse.ButtonDown(Mouse.MouseKeys.Left);
+                                Thread.Sleep(50);
+                                Mouse.ButtonUp(Mouse.MouseKeys.Left);
+                                Thread.Sleep(300);
+                                Mouse.Move(490, 352);
+                                Thread.Sleep(100);
+                                Mouse.ButtonDown(Mouse.MouseKeys.Left);
+                                Thread.Sleep(50);
+                                Mouse.ButtonUp(Mouse.MouseKeys.Left);
+                                Thread.Sleep(1000);
+                            }
+
+                            if (bmp.GetPixel(798, 151) == Color.FromArgb(13, 26, 26)) // main menu
+                            {
+                                Mouse.Move(798, 151);
+                                Thread.Sleep(600);
+                                Mouse.ButtonDown(Mouse.MouseKeys.Left);
+                                Thread.Sleep(50);
+                                Mouse.ButtonUp(Mouse.MouseKeys.Left);
+                                Thread.Sleep(300);
+                                Mouse.Move(744, 596); // cancel button
+                                Thread.Sleep(100);
+                                Mouse.ButtonDown(Mouse.MouseKeys.Left);
+                                Thread.Sleep(50);
+                                Mouse.ButtonUp(Mouse.MouseKeys.Left);
+                                Thread.Sleep(3000);
+                            }
+
                             if (bmp.GetPixel(495, 352) == Color.FromArgb(59, 45, 24)
                                 || bmp.GetPixel(507, 344) == Color.FromArgb(255, 255, 255))
                             {
-                                foreach (var x in Process.GetProcesses())
-                                {
-                                    Logger.Log(x.MainWindowTitle.ToString());
-                                }
+                                ListProcesses();
                                 GameSession.TimerTick = DateTime.Now.Ticks;
                                 Logger.Log("gamesession (3) restart..." + timeSpan.ToString());
                                 ClientApi.Stop();
@@ -140,6 +170,7 @@ namespace Server
                             }
                             else if (bmp.GetPixel(532, 765) != Color.FromArgb(78, 62, 29))
                             {
+                                ListProcesses();
                                 GameSession.TimerTick = DateTime.Now.Ticks;
                                 Logger.Log("gamesession (1) restart..." + timeSpan.ToString());
                                 GameSession.Start = 1;
@@ -163,10 +194,7 @@ namespace Server
                             if (bmp.GetPixel(425, 362) == Color.FromArgb(205, 190, 145))
                             {
                                 GameSession.TimerTick = DateTime.Now.Ticks;
-                                foreach (var x in Process.GetProcesses())
-                                {
-                                    Logger.Log(x.MainWindowTitle.ToString());
-                                }
+                                ListProcesses();
                                 flag = true;
                                 while (GameSession.GetPort() == 0)
                                 {
@@ -183,10 +211,7 @@ namespace Server
                             else if (bmp.GetPixel(507, 344) == Color.FromArgb(255, 255, 255)
                                || bmp.GetPixel(525, 125) == Color.FromArgb(17, 17, 17))
                             {
-                                foreach (var x in Process.GetProcesses())
-                                {
-                                    Logger.Log(x.MainWindowTitle.ToString());
-                                }
+                                ListProcesses();
                                 GameSession.TimerTick = DateTime.Now.Ticks;
                                 Logger.Log("kill (3) restart..." + timeSpan.ToString());
                                 ClientApi.Stop();
@@ -229,7 +254,7 @@ namespace Server
             }
             finally
             {
-                gameControl.Change(60000, Timeout.Infinite);
+                TimerChange(gameControl, 60000);
             }
         }
 
@@ -304,7 +329,7 @@ namespace Server
                                 LoginTimer = new Timer(QueueTimerCallback, null, QueueTimerInterval, Timeout.Infinite);
                             }
                             else
-                                LoginTimer.Change(LoginTimerInterval, Timeout.Infinite);
+                                TimerChange(LoginTimer, LoginTimerInterval);
 
                         }
                     }
@@ -327,7 +352,7 @@ namespace Server
                         LogAndInfo("ex: " + x.Message);
                     }
                     if (LoginTimer != null)
-                        LoginTimer.Change(LoginTimerInterval, Timeout.Infinite);
+                        TimerChange(LoginTimer, LoginTimerInterval);
                     else
                         LoginTimer = new Timer(LoginTimerCallback, null, LoginTimerInterval, Timeout.Infinite);
                     //LogAndInfo("Trying again... " + Try.ToString());
@@ -336,7 +361,7 @@ namespace Server
             catch (Exception x)
             {
                 Logger.Log("login timer error: " + x.Message);
-                LoginTimer.Change(LoginTimerInterval, Timeout.Infinite);
+                TimerChange(LoginTimer, LoginTimerInterval);
             }
         }
         private static void QueueTimerCallback(object state) // check main screen
@@ -354,7 +379,7 @@ namespace Server
                 else
                 {
                     LogAndInfo("Waiting for the main screen..."); //);
-                    LoginTimer.Change(QueueTimerInterval, Timeout.Infinite);
+                    TimerChange(LoginTimer, QueueTimerInterval);
                 }
             }
             else
@@ -453,7 +478,6 @@ namespace Server
             //Logger.Log("q2timer");
             try
             {
-                Logger.Log("q2ttimer");
                 /*var process = GetProcessByName("League of Legends");
                 if (process == null)*/
                 int port = GameSession.GetPort();
@@ -514,10 +538,7 @@ namespace Server
                                         bmp.Bitmap.Save("gs5.bmp");
                                         if (bmp.GetPixel(425, 362) == Color.FromArgb(205, 190, 145))
                                         {
-                                            foreach (var x in Process.GetProcesses())
-                                            {
-                                                Logger.Log(x.MainWindowTitle.ToString());
-                                            }
+                                            ListProcesses();
                                             GameSession.TimerTick = DateTime.Now.Ticks;
                                             Logger.Log("gamesession (5) restart...");
                                             Logger.Log("Game crashed. Trying to continue...");
@@ -545,7 +566,7 @@ namespace Server
                     {
                         GameSession.TimerTick = DateTime.Now.Ticks;
                         if (LCU != null && !LCU.InChampSelect())
-                            LoginTimer.Change(QueueTimerInterval, Timeout.Infinite);
+                            TimerChange(LoginTimer, QueueTimerInterval);
                         else
                         {
                             sel = LCU.SelectedChamp();
@@ -570,7 +591,7 @@ namespace Server
                                     if (port == 0)
                                     {
                                         LogAndInfo("picked champion");
-                                        LoginTimer.Change(QueueTimerInterval, Timeout.Infinite);
+                                        TimerChange(LoginTimer, QueueTimerInterval);
                                     }
                                 }
                                 else
@@ -585,7 +606,7 @@ namespace Server
                                         Thread.Sleep(1000);
                                         if (port == 0)
                                         {
-                                            LoginTimer.Change(QueueTimerInterval, Timeout.Infinite);
+                                            TimerChange(LoginTimer, QueueTimerInterval);
                                         }
                                         else
                                         {
@@ -653,7 +674,7 @@ namespace Server
                     Try--;
                 Server.SetInfoText("q2 Login timer error");
                 if (LoginTimer != null)
-                    LoginTimer.Change(QueueTimerInterval, Timeout.Infinite);
+                    TimerChange(LoginTimer, QueueTimerInterval);
                 Logger.Log("restarting...");
                 Logger.Log("error: " + x.Message);
                 Logger.Log(x.StackTrace);
@@ -992,6 +1013,33 @@ namespace Server
             catch (Exception x)
             {
                 LogAndInfo("killedge (2) error: " + x.Message);
+            }
+        }
+
+        public static void TimerChange(Timer timer, int interval = 1000, int timeout = Timeout.Infinite)
+        {
+            try
+            {
+                timer.Change(interval, timeout);
+            }
+            catch (Exception x)
+            {
+                Logger.Log("Timer change error: " + x.Message);
+            }
+        }
+        public static void ListProcesses()
+        {
+            try
+            {
+                foreach (var x in Process.GetProcesses())
+                {
+                    if (x.ProcessName.Length > 0)
+                        Logger.Log(x.ProcessName + " (pid: " + x.Id + "): " + x.MainWindowTitle.ToString());
+                }
+            }
+            catch (Exception x)
+            {
+                Logger.Log("list process error: " + x.Message);
             }
         }
     }

@@ -226,7 +226,7 @@ namespace Server.GameApi
                         }
                     }
                     else if (GameTimer != null)
-                        GameTimer.Change(8000, Timeout.Infinite);
+                        ClientApi.TimerChange(GameTimer, 8000);
 
                     //Logger.Log("gtfalse3");
                 }
@@ -265,7 +265,7 @@ namespace Server.GameApi
                                         if (!Shop.Opened)
                                         {
                                             //Logger.Log("opening shop");
-                                            Shop.Toogle();
+                                            Shop.Toggle();
                                             Thread.Sleep(RandomTimeGenerator(500));/*
                                 MouseOperations.SetCursorPosition(420 + RandomTimeGenerator(5), 80 + RandomTimeGenerator(4));
                                 Thread.Sleep(RandomTimeGenerator(200));
@@ -311,7 +311,7 @@ namespace Server.GameApi
                             /*if (Shop.Opened)
                                 Logger.Log("closing shop");*/
                             if (Shop.Opened)
-                                Shop.Toogle();
+                                Shop.Toggle();
                             Thread.Sleep(RandomTimeGenerator());
                             Server.SetInfoText("Bought first items.");
                             Thread.Sleep(RandomTimeGenerator(35000) + 7500);
@@ -416,7 +416,7 @@ namespace Server.GameApi
                     Logger.Log("Error in 10sec timer: " + ex.Message);
                 }
                 if (TenSecondsTimer != null)
-                    TenSecondsTimer.Change(RandomTimeGenerator(10000), Timeout.Infinite);
+                    ClientApi.TimerChange(TenSecondsTimer, RandomTimeGenerator(10000));
                 else
                 {
                     Logger.Log("10sec timer stopped - restarting...");
@@ -595,7 +595,7 @@ namespace Server.GameApi
                                         {
                                             if (!Shop.Opened)
                                             {
-                                                Shop.Toogle();
+                                                Shop.Toggle();
                                                 Thread.Sleep(RandomTimeGenerator(500));
                                                 /*MouseOperations.SetCursorPosition(420 + RandomTimeGenerator(5), 80 + RandomTimeGenerator(4));
                                                 Thread.Sleep(RandomTimeGenerator(200));
@@ -636,7 +636,7 @@ namespace Server.GameApi
                                 }
                                 Thread.Sleep(RandomTimeGenerator());
                                 if (Shop.Opened)
-                                    Shop.Toogle();
+                                    Shop.Toggle();
                                 //-----buyitems
                                 pressNothing = true;
                                 /* baseX = 566;//allyCreep.X;
@@ -749,7 +749,7 @@ namespace Server.GameApi
             {
                 if (SecondsTimer != null)
                 {
-                    SecondsTimer.Change(RandomTimeGenerator(), Timeout.Infinite);
+                    ClientApi.TimerChange(SecondsTimer, RandomTimeGenerator());
                 }
                 else
                 {
@@ -788,7 +788,7 @@ namespace Server.GameApi
                     Logger.Log("err: " + ex.Message);
                 }
             }
-            HalfMinuteTimer.Change(RandomTimeGenerator(30000), Timeout.Infinite);
+            ClientApi.TimerChange(HalfMinuteTimer, RandomTimeGenerator(30000));
         }
 
         private void MinuteTimerCallback(object state)
@@ -842,7 +842,7 @@ namespace Server.GameApi
                 }
             }
             if (MinuteTimer != null)
-                MinuteTimer.Change(RandomTimeGenerator(MinuteTimerInterval), Timeout.Infinite);
+                ClientApi.TimerChange(MinuteTimer, RandomTimeGenerator(MinuteTimerInterval));
         }
         public static int RandomTimeGenerator(int avg = 1000) => rand.Next(avg - (avg / 3), avg + (avg / 3));
         public void SkillUp(int choice = 0)

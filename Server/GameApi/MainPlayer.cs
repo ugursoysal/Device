@@ -12,7 +12,7 @@ namespace Server.GameApi
 
         public MainPlayer(int port = 2999)
         {
-            Logger.Log("create main player p: " + port);
+            //Logger.Log("create main player p: " + port);
             URL = $"https://127.0.0.1:{port}/liveclientdata/activeplayer";
             try
             {

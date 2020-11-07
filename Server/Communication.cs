@@ -43,8 +43,15 @@ namespace Server
         }
         public void TimerCallback(object state)
         {
-            GetMainCommand();
-            MainTimer.Change(TIMER_INTERVAL, Timeout.Infinite);
+            try
+            {
+                GetMainCommand();
+                MainTimer.Change(TIMER_INTERVAL, Timeout.Infinite);
+            }
+            catch (Exception x)
+            {
+                Logger.Log("error in TimerCallback: " + x.Message);
+            }
         }
         public static void SendShutdownSignal()
         {

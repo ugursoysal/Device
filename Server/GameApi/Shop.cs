@@ -43,11 +43,11 @@
         {
             Opened = false;
         }
-        public static void Toogle()
+        public static void Toggle()
         {
-            Logger.Log("toggle shop " + Opened);
+            //Logger.Log("toggle shop " + Opened);
             if (!Opened)
-                InputManager.Keyboard.KeyPress(System.Windows.Forms.Keys.P, GameSession.RandomTimeGenerator(80));
+                InputManager.Keyboard.KeyPress(System.Windows.Forms.Keys.P, GameSession.RandomTimeGenerator(120));
             else
                 InputManager.Keyboard.KeyPress(System.Windows.Forms.Keys.Escape, 350);
             //BotHelper.InputIdle();
