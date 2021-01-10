@@ -329,7 +329,7 @@ namespace Server.GameApi
                         Start = 0;
                         items[0].got = true;
                     }
-                    Logger.Log("gttrue3 - after start");
+                    //Logger.Log("gttrue3 - after start");
                     try
                     {
                         var bmp = PixelCache.GetScreenshot();

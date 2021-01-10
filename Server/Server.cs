@@ -213,12 +213,12 @@ namespace Server
                 }
                 else
                 {
-                    Logger.Log("bot is working... (2)");
+                    Logger.Log("check - OK: bot is working... (2)");
                 }
             }
             catch (Exception x)
             {
-                Logger.Log("serverControlTimer error: " + x.Message);
+                Logger.Log("check - FAIL: serverControlTimer error: " + x.Message);
             }
             finally
             {

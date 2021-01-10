@@ -217,7 +217,8 @@ namespace Device
             }
             catch (Exception ex)
             {
-                MessageBox.Show("error: " + ex.Message);
+                File.AppendAllText("device.log", "StopButton: " + ex.Message);
+                //MessageBox.Show("error: " + ex.Message);
             }
         }
         private void StartButton_Click(object sender, EventArgs e)
@@ -229,7 +230,8 @@ namespace Device
             }
             catch (Exception ex)
             {
-                MessageBox.Show("error: " + ex.Message);
+                File.AppendAllText("device.log", "StartButton: " + ex.Message);
+                //MessageBox.Show("error: " + ex.Message);
             }
         }
 
@@ -263,7 +265,7 @@ namespace Device
         {
             if (Accounts == null || Accounts.Count < 1)
             {
-                MessageBox.Show($"Nothing to be saved.");
+                MessageBox.Show($"No accounts to save.");
             }
             else
             {
@@ -280,8 +282,9 @@ namespace Device
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Can't save file.\n\nError message: {ex.Message}\n\n" +
-                        $"Details:\n\n{ex.StackTrace}");
+                        File.AppendAllText("device.log", "SaveAccounts: " + ex.Message);
+                        //MessageBox.Show($"Can't save file.\n\nError message: {ex.Message}\n\n" +
+                        //$"Details:\n\n{ex.StackTrace}");
                     }
                 }
             }
@@ -305,13 +308,15 @@ namespace Device
                 }
                 catch (SecurityException ex)
                 {
-                    MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}");
+                    File.AppendAllText("device.log", "LoadAccountsButton SecurityException: " + ex.Message);
+                    //MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
+                    //$"Details:\n\n{ex.StackTrace}");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Can't load file.\n\nError message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}");
+                    File.AppendAllText("device.log", "LoadAccountsButton: " + ex.Message);
+                    //MessageBox.Show($"Can't load file.\n\nError message: {ex.Message}\n\n" +
+                    //$"Details:\n\n{ex.StackTrace}");
                 }
             }
         }
@@ -350,23 +355,30 @@ namespace Device
 
         private void LoadButton_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem != null)
+            try
             {
-                var selectedAccount = Accounts.FirstOrDefault(a => a.Username == listBox1.SelectedItem.ToString());
-                if (selectedAccount != null)
+                if (listBox1.SelectedItem != null)
                 {
-                    if (dataGridView1.SelectedRows != null)
+                    var selectedAccount = Accounts.FirstOrDefault(a => a.Username == listBox1.SelectedItem.ToString());
+                    if (selectedAccount != null)
                     {
-                        var selectedClient = Clients.FirstOrDefault(a => a.ID == Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value.ToString()));
-                        if (selectedAccount != null)
+                        if (dataGridView1.SelectedRows != null)
                         {
-                            selectedClient.LoadedAccount = selectedAccount;
-                            return;
+                            var selectedClient = Clients.FirstOrDefault(a => a.ID == Convert.ToInt32(dataGridView1.SelectedRows[0].Cells[0].Value.ToString()));
+                            if (selectedAccount != null)
+                            {
+                                selectedClient.LoadedAccount = selectedAccount;
+                                return;
+                            }
                         }
                     }
                 }
+                MessageBox.Show("Please select account and ID.");
             }
-            MessageBox.Show("Please select account and ID.");
+            catch (Exception x)
+            {
+                File.AppendAllText("device.log", "LoadButton: " + x.Message);
+            }
         }
 
         private void StartAllButton_Click(object sender, EventArgs e)

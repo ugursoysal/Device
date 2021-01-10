@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
-using System.Web.UI;
 
 namespace Server
 {
@@ -34,9 +33,9 @@ namespace Server
         static Timer gameControl = null;
         public static LCU LCU = null;
 
-        static int hWnd = 0;
         static ClientWindow clientWindow = null;
-        private const int SW_HIDE = 0;
+        //static int hWnd = 0;
+        //private const int SW_HIDE = 0;
         //private const int SW_SHOW = 5;
         const int LoginTimerInterval = 1000;
         const int QueueTimerInterval = 4000;
@@ -245,12 +244,12 @@ namespace Server
                 }
                 else
                 {
-                    Logger.Log("bot is working... (1)");
+                    Logger.Log("check - OK: bot is working... (1)");
                 }
             }
             catch (Exception x)
             {
-                Logger.Log("gameControlTimer error: " + x.Message);
+                Logger.Log("check - FAIL: gameControlTimer error: " + x.Message);
             }
             finally
             {
@@ -599,7 +598,7 @@ namespace Server
                                     sel = LCU.SelectedChamp();
                                     if (sel != 0)
                                     {
-                                        LogAndInfo("p: " + port);
+                                        //LogAndInfo("p: " + port);
                                         Try = 6;
                                         champ = sel;
                                         LogAndInfo("Picked champion: " + Champions.GetChampById(champ));
@@ -696,11 +695,11 @@ namespace Server
         {
             try
             {
-                hWnd = clientWindow.Handle.ToInt32();
+                //hWnd = clientWindow.Handle.ToInt32();
                 NativeMethods.Focus(clientWindow.InnerWindow.Handle);
                 //Logger.Log("hWnd: " + hWnd.ToString());
                 Thread.Sleep(1000);
-                NativeMethods.ShowWindow(hWnd, SW_HIDE);
+                //NativeMethods.ShowWindow(hWnd, SW_HIDE);
                 Thread.Sleep(5000);
 
                 Rectangle userBox = clientWindow.UsernameBox;
@@ -808,20 +807,22 @@ namespace Server
 
         public static void KillAllLeagueClientProcesses()
         {
-            KillAllProcessesContaining("LeagueClient");
-            KillAllProcessesContaining("RiotClient");
-            KillAllProcessesContaining("League of Legends");
+            KillAllProcessesContaining("Riot");
+            KillAllProcessesContaining("League");
             try
             {
                 foreach (Process p in Process.GetProcesses())
                 {
-                    if (p.MainWindowTitle.Contains("Failed")
+                    if ((p.MainWindowTitle.Contains("Failed")
                         || p.MainWindowTitle.Contains("Error")
                         || p.MainWindowTitle.Contains("Hata")
                         || p.MainWindowTitle.Contains("League")
                         || p.MainWindowTitle.Contains("cmd.exe")
-                        || p.MainWindowTitle.Contains("Edge"))
+                        || p.MainWindowTitle.Contains("Edge")
+                        || p.MainWindowTitle.Contains("Chrome"))
+                            && !p.ProcessName.Contains("Device"))
                     {
+                        Logger.Log("closing window: (pid: " + p.Id + ") " + p.MainWindowTitle + " - " + p.ProcessName);
                         p.Kill();
                     }
                 }
